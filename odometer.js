@@ -1,5 +1,5 @@
 (function() {
-  var COUNT_FRAMERATE, COUNT_MS_PER_FRAME, DIGIT_FORMAT, DIGIT_HTML, DIGIT_SPEEDBOOST, DURATION, FORMAT_MARK_HTML, FORMAT_PARSER, FRAMERATE, FRAMES_PER_VALUE, MS_PER_FRAME, MutationObserver, Odometer, RIBBON_HTML, TRANSITION_END_EVENTS, TRANSITION_SUPPORT, VALUE_HTML, addClass, createFromHTML, fractionalPart, now, removeClass, requestAnimationFrame, round, transitionCheckStyles, trigger, truncate, wrapJQuery, _jQueryWrapped, _old, _ref, _ref1,
+  var COUNT_FRAMERATE, COUNT_MS_PER_FRAME, DEBUG, DIGIT_FORMAT, DIGIT_HTML, DIGIT_SPEEDBOOST, DURATION, FORMAT_MARK_HTML, FORMAT_PARSER, FRAMERATE, FRAMES_PER_VALUE, MS_PER_FRAME, MutationObserver, Odometer, RIBBON_HTML, TRANSITION_END_EVENTS, TRANSITION_SUPPORT, VALUE_HTML, addClass, createFromHTML, fractionalPart, now, removeClass, requestAnimationFrame, round, transitionCheckStyles, trigger, truncate, wrapJQuery, _jQueryWrapped, _old, _ref, _ref1,
     __slice = [].slice;
 
   VALUE_HTML = '<span class="odometer-value"></span>';
@@ -27,6 +27,8 @@
   MS_PER_FRAME = 1000 / FRAMERATE;
 
   COUNT_MS_PER_FRAME = 1000 / COUNT_FRAMERATE;
+
+  DEBUG = false;
 
   TRANSITION_END_EVENTS = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd';
 
@@ -144,6 +146,7 @@
       if ((_base = this.options).duration == null) {
         _base.duration = DURATION;
       }
+      this.options.debug = DEBUG || this.options.debug || false;
       this.MAX_VALUES = ((this.options.duration / MS_PER_FRAME) / FRAMES_PER_VALUE) | 0;
       this.resetFormat();
       this.value = this.cleanValue((_ref1 = this.options.value) != null ? _ref1 : '');
@@ -277,8 +280,43 @@
       };
     };
 
+    Odometer.prototype.decimalsInValue = function(value) {
+      var decimals, digit, hasDigit, _i, _j, _len, _len1, _ref, _ref1;
+      if (value == null) {
+        value = this.value;
+      }
+      decimals = 0;
+      hasDigit = false;
+      _ref = value.toString().split('').reverse();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        digit = _ref[_i];
+        if (digit === '.') {
+          hasDigit = true;
+          break;
+        }
+        if (digit === ',') {
+          hasDigit = true;
+          break;
+        }
+      }
+      if (hasDigit) {
+        _ref1 = value.toString().split('').reverse();
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          digit = _ref1[_j];
+          if (digit === '.') {
+            break;
+          }
+          if (digit === ',') {
+            break;
+          }
+          decimals += 1;
+        }
+      }
+      return decimals;
+    };
+
     Odometer.prototype.render = function(value) {
-      var classes, cls, digit, match, newClasses, theme, wholePart, _i, _j, _len, _len1, _ref;
+      var classes, cls, decimals, decimalsInValue, digit, i, intDigit, intDigitPrecision, match, newClasses, paddingChar, precisionToDisplay, theme, wholePart, _i, _j, _k, _l, _len, _len1, _ref, _ref1, _ref2, _ref3;
       if (value == null) {
         value = this.value;
       }
@@ -314,14 +352,45 @@
       this.el.className = newClasses.join(' ');
       this.ribbons = {};
       this.digits = [];
+      decimals = 0;
+      precisionToDisplay = this.format.precision;
       wholePart = !this.format.precision || !fractionalPart(value) || false;
-      _ref = value.toString().split('').reverse();
-      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-        digit = _ref[_j];
+      decimalsInValue = this.decimalsInValue(value);
+      if (DEBUG) {
+        console.log("rendering value: ", value, "format:", this.format, "fractionalPart(value):", fractionalPart(value), "decimalsInValue:", decimalsInValue, "wholePart:", wholePart);
+      }
+      if (decimalsInValue < this.format.precision) {
+        for (i = _j = _ref = decimalsInValue + 1, _ref1 = this.format.precision; _j <= _ref1; i = _j += 1) {
+          if (DEBUG) {
+            console.log("Padding with 0, idx:", i);
+          }
+          this.addDigit(0, false);
+        }
+      }
+      if (decimalsInValue === 0 && this.format.precision > 0) {
+        this.addDigit('.', false);
+      }
+      intDigit = 0;
+      _ref2 = value.toString().split('').reverse();
+      for (_k = 0, _len1 = _ref2.length; _k < _len1; _k++) {
+        digit = _ref2[_k];
+        if (wholePart) {
+          intDigit += 1;
+        }
         if (digit === '.') {
           wholePart = true;
         }
         this.addDigit(digit, wholePart);
+      }
+      intDigitPrecision = this.options.intpadding || 7;
+      if (intDigit < intDigitPrecision) {
+        paddingChar = this.options.intpaddingchar || ' ';
+        if (this.options.debug) {
+          console.log("Too small int part, padding needed with char '" + paddingChar + "' int part has ", intDigit, "digits but", intDigitPrecision, "required from config");
+        }
+        for (i = _l = _ref3 = intDigit + 1; _l <= intDigitPrecision; i = _l += 1) {
+          this.addDigit(paddingChar, wholePart);
+        }
       }
       return this.startWatchingMutations();
     };
@@ -405,7 +474,10 @@
       digit = this.renderDigit();
       digit.querySelector('.odometer-value').innerHTML = value;
       this.digits.push(digit);
-      return this.insertDigit(digit);
+      this.insertDigit(digit);
+      if (!repeating) {
+        return addClass(digit, "decimal-digit");
+      }
     };
 
     Odometer.prototype.animate = function(newValue) {
