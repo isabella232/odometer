@@ -232,6 +232,26 @@ class Odometer
 
     @format = {repeating, radix, precision}
 
+  decimalsInValue: (value=@value) ->
+    decimals = 0
+    hasDigit = false
+    for digit in value.toString().split('').reverse()
+      if digit is '.'
+        hasDigit = true
+        break
+      if digit is ','
+        hasDigit = true
+        break
+    if hasDigit
+      for digit in value.toString().split('').reverse()
+         if digit is '.'
+                  break
+         if digit is ','
+                  break
+         decimals+=1
+                  
+    return decimals
+
   render: (value=@value) ->
     @stopWatchingMutations()
     @resetFormat()
@@ -269,7 +289,21 @@ class Odometer
     @ribbons = {}
 
     @digits = []
+    decimals=0
+    precisionToDisplay = @format.precision
     wholePart = not @format.precision or not fractionalPart(value) or false
+    
+    decimalsInValue = @decimalsInValue(value)
+    if DEBUG 
+        console.log "rendering value: ", value  , "format:", @format, "fractionalPart(value):", fractionalPart(value),"decimalsInValue:",decimalsInValue, "wholePart:", wholePart
+
+    if decimalsInValue < @format.precision
+            for i in [decimalsInValue+1..@format.precision] by 1
+                if DEBUG
+                      console.log "Padding with 0, idx:", i
+                @addDigit 0, false
+    if decimalsInValue == 0 &&  @format.precision > 0
+                @addDigit '.', false
     intDigit = 0
     for digit in value.toString().split('').reverse()
       if wholePart
