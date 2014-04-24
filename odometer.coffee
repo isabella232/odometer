@@ -40,7 +40,7 @@ DIGIT_SPEEDBOOST = .5
 MS_PER_FRAME = 1000 / FRAMERATE
 COUNT_MS_PER_FRAME = 1000 / COUNT_FRAMERATE
 
-DEBUG = true
+DEBUG = false
 
 TRANSITION_END_EVENTS = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd'
 
@@ -125,6 +125,7 @@ class Odometer
         @options[k] = v
 
     @options.duration ?= DURATION
+    @options.debug = DEBUG or @options.debug or false
     @MAX_VALUES = ((@options.duration / MS_PER_FRAME) / FRAMES_PER_VALUE) | 0
 
     @resetFormat()
@@ -269,11 +270,23 @@ class Odometer
 
     @digits = []
     wholePart = not @format.precision or not fractionalPart(value) or false
+    intDigit = 0
     for digit in value.toString().split('').reverse()
+      if wholePart
+          intDigit += 1
       if digit is '.'
         wholePart = true
 
       @addDigit digit, wholePart
+
+    intDigitPrecision =  @options.intpadding or 7
+    
+    if intDigit < intDigitPrecision
+       paddingChar =  @options.intpaddingchar or ' '
+       if @options.debug
+             console.log "Too small int part, padding needed with char '"+ paddingChar+ "' int part has ", intDigit, "digits but", intDigitPrecision, "required from config"
+       for i in [intDigit+1..intDigitPrecision] by 1
+          @addDigit paddingChar, wholePart
 
     @startWatchingMutations()
 
