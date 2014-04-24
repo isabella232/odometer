@@ -40,6 +40,8 @@ DIGIT_SPEEDBOOST = .5
 MS_PER_FRAME = 1000 / FRAMERATE
 COUNT_MS_PER_FRAME = 1000 / COUNT_FRAMERATE
 
+DEBUG = true
+
 TRANSITION_END_EVENTS = 'transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd'
 
 transitionCheckStyles = document.createElement('div').style
@@ -345,6 +347,9 @@ class Odometer
     @digits.push digit
 
     @insertDigit digit
+    if ! repeating
+       addClass(digit, "decimal-digit") 
+    
 
   animate: (newValue) ->
     if not TRANSITION_SUPPORT or @options.animation is 'count'

@@ -1,4 +1,7 @@
 node_modules
 .sass-cache/
 target
+themes
 *.*~
+odometer.js
+odometer.min.js

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="../themes/odometer-theme-gdf.css" />
+<style>
+.odometer {
+  font-size: 40px;
+}
+</style>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/numeral.js/1.4.5/numeral.min.js"></script>
+<script>
+        window.odometerOptions = {
+         format: '(ddd ddd),ddddd',
+         intpadding:6
+        };
+
+function addOdometer(value) {
+   var valueAsStr = value;
+   if (typeof value === 'number'){
+            valueAsStr = numeral(value).format("0.000000");
+    }
+   $("<div>").append(value+" => "+valueAsStr+" => ").append($("<div>").attr("class", "odometer").append(valueAsStr)).appendTo($("body"));
+}
+
+$( document ).ready(function() {
+        numeral.language('fr', {
+            delimiters: {
+                thousands: ' ',
+                decimal: ','
+            },
+            abbreviations: {
+                thousand: 'k',
+                million: 'm',
+                billion: 'b',
+                trillion: 't'
+            },
+            ordinal : function (number) {
+                return number === 1 ? 'er' : 'ème';
+            },
+            currency: {
+                symbol: '€'
+            }
+        });
+        numeral.language('fr');
+
+        addOdometer(123);
+        addOdometer(123.1);
+        addOdometer(123.12);
+        addOdometer(123.1234);
+        addOdometer(123.1234569);
+        addOdometer(123456.123456);
+        addOdometer("123456,123456");
+});
+</script>
+<script src="../odometer.js"></script>
+
+<body>
+</body>
