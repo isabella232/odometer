@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
+    <packaging>jar</packaging>
+    <groupId>org.webjars</groupId>
+    <artifactId>netceler-hubspot-odometer</artifactId>
+    <version>0.4.6</version>
+    <name>NetCeler fork of HubSpot Odometer js library</name>
+    <description>Webjar for Odometer.js</description>
+
+    <developers>
+        <developer>
+            <id>jgraglia</id>
+            <name>Julien Graglia</name>
+            <email>jgragmia@netceler.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>https://github.com/netceler/odometer</url>
+        <connection>scm:git:https://github.com/netceler/odometer.git</connection>
+        <developerConnection>scm:git:https://github.com/netceler/odometer.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <dependencies>
+        
+    </dependencies>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <upstream.version>0.4.6</upstream.version>
+        <destDir>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${upstream.version}</destDir>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${destDir}"/>
+                                <echo message="Copying license files" />
+                                <copy todir="${destDir}" verbose="true">
+                                    <fileset dir="." includes="LICENSE" />
+                                </copy>                                
+                                <echo message="Copying js files" />
+                                <copy todir="${destDir}" verbose="true">
+                                    <fileset dir="." includes="**.js" />
+                                </copy>
+                                <echo message="Copying theme files (css)" />
+                                <copy todir="${destDir}/themes" verbose="true">
+                                    <fileset dir="themes" includes="*.css" />
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.5.1</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>sonatype-nexus-staging</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
