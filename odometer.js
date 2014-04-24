@@ -382,7 +382,7 @@
         }
         this.addDigit(digit, wholePart);
       }
-      intDigitPrecision = this.options.intpadding || 7;
+      intDigitPrecision = this.options.intpadding || -1;
       if (intDigit < intDigitPrecision) {
         paddingChar = this.options.intpaddingchar || ' ';
         if (this.options.debug) {

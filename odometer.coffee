@@ -313,7 +313,7 @@ class Odometer
 
       @addDigit digit, wholePart
 
-    intDigitPrecision =  @options.intpadding or 7
+    intDigitPrecision =  @options.intpadding or -1
     
     if intDigit < intDigitPrecision
        paddingChar =  @options.intpaddingchar or ' '
