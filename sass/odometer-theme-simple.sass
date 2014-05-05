@@ -1,0 +1,66 @@
+@import compass/css3
+@import mixins
+$font:"Economica"
+$font:"Arimo"
+@import url("//fonts.googleapis.com/css?family="+$font)
+
+// basé sur le theme "car"
+
+$themeName: "odometer-theme-simple"
+$padding: .15em
+$borderRadius: .2em
+$nc_blue: #009EE0
+$nc_gray: #4C6373
+$ivsystem_blue: #33ffff
+$ivenergy_green: #99ff00
+
+$background: #7F7F7F
+$digit_decimal: #000
+$background_decimal: #E5E5E5
+$background_decimal_gradient: #FFF
+$background_digit: #FFF
+$background_digit_gradient: #FFF
+$background_int: #FFF
+$digit_int: #000
+
++spinning-odometer($themeName)
+
+.odometer-unit
+    font-family: $font, sans-serif
+    vertical-align: middle
+    padding-left: 0.1em
+        
+.odometer.odometer-auto-theme, .odometer#{"." + $themeName}
+    +border-radius(.34em)
+    font-family: $font, monospace
+    padding: $padding
+    background: $background
+    color: $digit_int
+
+
+    .odometer-digit
+        +box-shadow(inset 0 0 .3em rgba(0, 0, 0, 0.8))
+        +background-image(linear-gradient(top, $background_digit 0%, $background_digit 40%, $background_digit_gradient 60%, $background_digit 80%, $background_digit 100%))
+        padding: 0 $padding
+        background-color: $background_int
+
+        &:first-child
+            +border-radius($borderRadius 0 0 $borderRadius)
+
+        &.decimal-digit
+            +background-image(linear-gradient(top, $background_decimal 0%, $background_decimal 40%, $background_decimal_gradient 60%, $background_decimal 80%, $background_decimal 100%))
+            background-color: $background_decimal
+            color: $digit_decimal
+
+        &:last-child
+            +border-radius(0 $borderRadius $borderRadius 0)
+
+        .odometer-digit-inner
+            left: $padding
+
+    &.odometer-animating-up .odometer-ribbon-inner, &.odometer-animating-down.odometer-animating .odometer-ribbon-inner
+        -webkit-transition-timing-function: linear
+        -moz-transition-timing-function: linear
+        -ms-transition-timing-function: linear
+        -o-transition-timing-function: linear
+        transition-timing-function: linear

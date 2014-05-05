@@ -12,7 +12,7 @@
     <packaging>jar</packaging>
     <groupId>org.webjars</groupId>
     <artifactId>netceler-hubspot-odometer</artifactId>
-    <version>0.4.6.1</version>
+    <version>0.4.7</version>
     <name>NetCeler fork of HubSpot Odometer js library</name>
     <description>Webjar for Odometer.js</description>
 

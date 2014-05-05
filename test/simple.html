@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="../themes/odometer-theme-simple.css" />
+<style>
+.odometer {
+  font-size: 40px;
+  margin:5px;
+}
+</style>
+<script>
+window.odometerOptions = {
+  format: '(ddd),dd'
+};
+</script>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="../odometer.js"></script>
+</head>
+<body>
+<div class="odometer">-123,456789</div>
+<br/>
+<div class="odometer">-123,4</div>
+<br/>
+<div class="odometer">-123</div>
+<br/>
+<div class="odometer">35813123,456789</div>
+</body>
+</html>
